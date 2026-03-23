@@ -1,0 +1,104 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/cars" text="Prapa"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Historia e Makinës</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="hist-content">
+
+  <!-- Banner makine -->
+  @if (car) {
+    <div class="car-banner">
+      <ion-icon name="car-outline" class="banner-icon"></ion-icon>
+      <div class="banner-info">
+        <p class="banner-label">Makina</p>
+        <p class="banner-model">
+          {{ car.model }}
+          @if (!car.isActive) {
+            <ion-badge color="danger" style="margin-left: 8px;">Joaktive</ion-badge>
+            <ion-button fill="solid" color="success" size="small" (click)="reactivateCar()" style="height: 24px; --padding-start: 8px; --padding-end: 8px; margin-left:8px">
+              <ion-icon name="refresh-outline" slot="start" style="margin-right: 4px; font-size: 14px;"></ion-icon>
+              Bëje Aktive
+            </ion-button>
+          }
+        </p>
+      </div>
+    </div>
+  }
+
+  <!-- Lista rezervimeve -->
+  @let resList = (reservations$ | async) ?? [];
+  @if (resList.length === 0) {
+    <div class="empty-state">
+      <ion-icon name="calendar-outline" class="empty-icon"></ion-icon>
+      <p>Nuk ka rezervime për këtë makinë.</p>
+    </div>
+  } @else {
+    <div class="reservations-list">
+      @for (res of resList; track res.id) {
+        <ion-card class="res-card">
+          <ion-card-content>
+
+            <!-- Klienti -->
+            <div class="res-row">
+              <ion-icon name="person-outline" class="row-icon"></ion-icon>
+              <div>
+                <p class="row-label">Klienti</p>
+                <p class="row-value">{{ res.clientName }}</p>
+              </div>
+            </div>
+
+            <!-- Data e marrjes -->
+            <div class="res-row">
+              <ion-icon name="calendar-outline" class="row-icon"></ion-icon>
+              <div>
+                <p class="row-label">Marrja</p>
+                <p class="row-value">{{ formatDate(res.startDate) }}</p>
+              </div>
+            </div>
+
+            <!-- Data e kthimit -->
+            <div class="res-row">
+              <ion-icon name="calendar-outline" class="row-icon return-icon"></ion-icon>
+              <div>
+                <p class="row-label">Kthimi</p>
+                <p class="row-value">{{ formatDate(res.endDate) }}</p>
+              </div>
+            </div>
+
+            <!-- Çmimi -->
+            <div class="price-row">
+              <span class="price-per-day">{{ getDays(res) }} ditë x {{ res.pricePerDay }}€</span>
+              <span class="total-price">{{ res.totalPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
+            </div>
+
+            <!-- Veprimet -->
+            <div class="actions-row">
+              <ion-button fill="clear" color="primary" (click)="editReservation(res)">
+                <ion-icon name="create-outline" slot="start"></ion-icon>
+                Ndrysho
+              </ion-button>
+              <ion-button fill="clear" color="danger" (click)="promptDelete(res)">
+                <ion-icon name="trash-outline" slot="start"></ion-icon>
+                Fshi
+              </ion-button>
+            </div>
+
+          </ion-card-content>
+        </ion-card>
+      }
+    </div>
+  }
+
+  <ion-alert
+    [isOpen]="deleteAlertOpen"
+    header="Konfirmim"
+    message="A jeni të sigurt që dëshironi të fshini këtë rezervim?"
+    [buttons]="deleteAlertButtons"
+    (didDismiss)="deleteAlertOpen = false">
+  </ion-alert>
+
+</ion-content>

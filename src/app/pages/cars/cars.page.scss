@@ -1,0 +1,158 @@
+.cars-content {
+  --background: #f4f6f9;
+}
+
+/* ─── Ikona titull ────────────────────────────── */
+.title-icon {
+  vertical-align: middle;
+  margin-right: 6px;
+  font-size: 20px;
+}
+
+/* ─── Kartë makine ────────────────────────────── */
+.car-card {
+  ion-card-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ion-color-primary);
+  }
+}
+
+/* ─── Butonat veprimit ────────────────────────── */
+.car-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.action-btn {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  font-size: 13px;
+  --border-radius: 8px;
+  height: 34px;
+}
+
+.delete-btn {
+  flex: 0 0 auto;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  height: 34px;
+  font-size: 13px;
+  min-width: unset;
+  margin: 0;
+  --border-radius: 8px;
+  --color: #ff3b30;
+  --background: transparent;
+  --border-color: rgba(255, 59, 48, 0.2);
+  --border-style: solid;
+  --border-width: 1px;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 12px 12px 0;
+    border-color: transparent #ff1a0d transparent transparent;
+    z-index: 1;
+  }
+
+  ion-icon {
+    font-size: 16px;
+    margin-right: 2px;
+  }
+}
+
+/* ─── Gjendje bosh ────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  color: #888;
+}
+
+.empty-icon {
+  font-size: 72px;
+  color: #c5d0de;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  font-size: 17px;
+  margin: 4px 0;
+  font-weight: 500;
+}
+
+.empty-hint {
+  font-size: 14px !important;
+  color: #aaa !important;
+}
+
+/* ─── FAB ─────────────────────────────────────── */
+.fab-add {
+  --box-shadow: 0 4px 16px rgba(240, 165, 0, 0.5);
+  width: 60px;
+  height: 60px;
+  ion-icon {
+    font-size: 28px;
+  }
+}
+
+/* ─── Modal ───────────────────────────────────── */
+.modal-content {
+  padding: 24px 20px 32px;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+.modal-input-item {
+  --background: #f4f6f9;
+  --border-radius: 10px;
+  --padding-start: 14px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+
+  ion-label {
+    font-weight: 600;
+    font-size: 13px !important;
+    color: #444 !important;
+  }
+
+  ion-input {
+    font-size: 17px;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-btn {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  height: 48px;
+}
+
+/* ─── Butoni logout ───────────────────────────── */
+.logout-btn {
+  --color: #ffffff;
+}

@@ -1,0 +1,206 @@
+.res-content {
+  --background: #f4f6f9;
+}
+
+/* ─── Banner makine ──────────────────────────── */
+.car-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--ion-color-primary);
+  color: #fff;
+  padding: 18px 20px;
+  margin-bottom: 8px;
+}
+
+.banner-icon {
+  font-size: 40px;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.banner-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.75;
+  margin: 0;
+}
+
+.banner-model {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 2px 0 0;
+}
+
+/* ─── Sektori i formës ───────────────────────── */
+.form-section {
+  padding: 12px 14px;
+}
+
+.form-item {
+  --background: #ffffff;
+  --border-radius: 12px;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+
+  ion-label {
+    font-weight: 600;
+    font-size: 13px !important;
+    color: #555 !important;
+    margin-bottom: 4px;
+  }
+
+  ion-input {
+    font-size: 17px;
+    --color: #111;
+  }
+}
+
+/* ─── Datetime ──────────────────────────────── */
+.datetime-section {
+  margin-bottom: 12px;
+}
+
+.datetime-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  margin: 0 4px 6px;
+}
+
+.datetime-row {
+  display: flex;
+  gap: 8px;
+}
+
+.datetime-display {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+
+  &:active {
+    border-color: var(--ion-color-primary);
+  }
+
+  ion-icon {
+    font-size: 22px;
+    color: var(--ion-color-primary);
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 16px;
+    font-weight: 500;
+    color: #111;
+  }
+}
+
+/* ─── Modal datetime ─────────────────────────── */
+.dt-modal-wrapper {
+  padding: 16px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dt-modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  text-align: center;
+  margin: 4px 0 0;
+}
+
+ion-datetime {
+  border-radius: 12px;
+  --background: #f9f9f9;
+}
+
+.dt-close-btn {
+  margin-top: 4px;
+  --border-radius: 10px;
+  font-weight: 600;
+}
+
+/* ─── Çmimi Total ────────────────────────────── */
+.total-box {
+  background: #1a3c5e;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  transition: background 0.3s;
+
+  &.total-error {
+    background: #7f1d1d;
+  }
+}
+
+.total-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+  margin: 0;
+}
+
+.total-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #f0a500;
+  margin: 0;
+}
+
+/* ─── Gabim konflikti ────────────────────────── */
+.conflict-box {
+  background: #fdecea;
+  border: 2px solid #e74c3c;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.conflict-icon {
+  font-size: 24px;
+  color: #c0392b;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.conflict-msg {
+  font-size: 15px;
+  font-weight: 600;
+  color: #c0392b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ─── Seksioni Ruaj ──────────────────────────── */
+.save-section {
+  padding: 0 14px 40px;
+}
+
+.save-btn {
+  --background: #1a3c5e;
+  --background-disabled: #aab5c0;
+  font-size: 18px;
+  font-weight: 700;
+  height: 56px;
+  --border-radius: 14px;
+}

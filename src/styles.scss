@@ -1,0 +1,108 @@
+/* ╔══════════════════════════════════════════════════════════╗
+   ║           Rent a Car Gjoni — Stilet Globale             ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+@import "@ionic/angular/css/core.css";
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/* ─── Ngjyrat e brendshme (Custom Properties) ────────────────── */
+:root {
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Ngjyra kryesore */
+  --ion-color-primary:        #1a3c5e;
+  --ion-color-primary-shade:  #16314e;
+  --ion-color-primary-tint:   #2a5280;
+
+  /* Ngjyra dytësore (amber/ari) */
+  --ion-color-secondary:        #f0a500;
+  --ion-color-secondary-shade:  #c98b00;
+  --ion-color-secondary-tint:   #f5b833;
+
+  /* Ngjyra rreziku */
+  --ion-color-danger:       #c0392b;
+  --ion-color-danger-shade: #a93226;
+  --ion-color-danger-tint:  #e74c3c;
+
+  /* Sfondi */
+  --ion-background-color:     #f4f6f9;
+  --ion-item-background:      #ffffff;
+
+  /* Tipografi */
+  --ion-font-family: var(--font-family-base);
+  --ion-font-size-base: 17px;
+
+  /* Toolbar */
+  --ion-toolbar-background:   var(--ion-color-primary);
+  --ion-toolbar-color:        #ffffff;
+}
+
+/* ─── Font global ─────────────────────────────────────────────── */
+* {
+  font-family: var(--font-family-base);
+}
+
+body {
+  font-size: var(--ion-font-size-base);
+}
+
+/* ─── Button minim 48px (aksesibilitet) ──────────────────────── */
+ion-button {
+  --border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  min-height: 48px;
+}
+
+/* ─── Input et label të mëdha ───────────────────────────────── */
+ion-item {
+  --min-height: 56px;
+  font-size: 16px;
+}
+
+ion-label {
+  font-size: 15px !important;
+}
+
+/* ─── Karta (Card) ───────────────────────────────────────────── */
+ion-card {
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
+  margin: 10px 12px;
+}
+
+ion-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+}
+
+/* ─── Barra e sipërme ─────────────────────────────────────────── */
+ion-toolbar {
+  --background: var(--ion-color-primary);
+  --color: #ffffff;
+}
+
+ion-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* ─── Badge ───────────────────────────────────────────────────── */
+.badge-inactive {
+  background: #c0392b;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 6px;
+}

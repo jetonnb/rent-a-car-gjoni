@@ -1,0 +1,152 @@
+.hist-content {
+  --background: #f4f6f9;
+}
+
+/* ─── Banner ────────────────────────────────── */
+.car-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--ion-color-primary);
+  color: #fff;
+  padding: 18px 20px;
+  margin-bottom: 8px;
+}
+
+.banner-icon {
+  font-size: 40px;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.banner-info {
+  flex: 1;
+}
+
+.banner-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.75;
+  margin: 0;
+}
+
+.banner-model {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 2px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ─── Lista ─────────────────────────────────── */
+.reservations-list {
+  padding: 4px 0;
+}
+
+.res-card {
+  margin: 10px 12px;
+  ion-card-content {
+    padding: 16px;
+  }
+}
+
+/* ─── Rresht info ───────────────────────────── */
+.res-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.row-icon {
+  font-size: 20px;
+  color: var(--ion-color-primary);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.return-icon {
+  color: #888;
+}
+
+.row-label {
+  font-size: 12px;
+  color: #888;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 2px;
+}
+
+.row-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+}
+
+/* ─── Çmimi ─────────────────────────────────── */
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f0f4f8;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 4px;
+}
+
+.price-per-day {
+  font-size: 14px;
+  color: #777;
+  font-weight: 500;
+}
+
+.total-price {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ion-color-primary);
+}
+
+/* ─── Veprimet ──────────────────────────────── */
+.actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+  border-top: 1px dashed #eee;
+  padding-top: 8px;
+
+  ion-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+/* ─── Gjendje bosh ──────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  color: #888;
+}
+
+.empty-icon {
+  font-size: 72px;
+  color: #c5d0de;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  font-size: 17px;
+  font-weight: 500;
+  margin: 0;
+}

@@ -1,0 +1,120 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <ion-icon name="car-sport-outline" class="title-icon"></ion-icon>
+      Makinat
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()" fill="clear" class="logout-btn" title="Dil">
+        <ion-icon name="log-out-outline" slot="icon-only" style="font-size:24px; color:#fff"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="cars-content">
+
+  <!-- Segment Filtrues -->
+  <div style="padding: 10px 16px;">
+    <ion-segment [(ngModel)]="filter" (ionChange)="filterChanged()">
+      <ion-segment-button value="active">
+        <ion-label>Makinat Aktive</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="all">
+        <ion-label>Historia te gjithave</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Lista e makinave -->
+  @let carList = (cars$ | async) ?? [];
+  @if (carList.length === 0) {
+    <div class="empty-state">
+      <ion-icon name="car-sport-outline" class="empty-icon"></ion-icon>
+      <p>Nuk ka makina aktive.</p>
+      <p class="empty-hint">Shtoni makinën e parë me butonin "+".</p>
+    </div>
+  } @else {
+    @for (car of carList; track car.id) {
+      <ion-card class="car-card">
+        <ion-card-header>
+          <ion-card-title>
+            {{ car.model }}
+            @if (car.isActive) {
+              @if (car.isReserved) {
+                <ion-badge color="warning" style="margin-left: 8px;">E Rezervuar</ion-badge>
+              } @else {
+                <ion-badge color="success" style="margin-left: 8px;">E lirë për çdo datë</ion-badge>
+              }
+            } @else {
+              <ion-badge color="danger" style="margin-left: 8px;">Jo Aktive</ion-badge>
+            }
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="car-actions">
+            @if (filter === 'active') {
+              <ion-button fill="solid" color="primary" (click)="goReserve(car)" class="action-btn">
+                <ion-icon name="calendar-outline" slot="start"></ion-icon>
+                Rezervo
+              </ion-button>
+            }
+            <ion-button [fill]="filter === 'active' ? 'outline' : 'solid'" color="primary" (click)="goHistory(car)" class="action-btn">
+              <ion-icon name="time-outline" slot="start"></ion-icon>
+              Historia
+            </ion-button>
+            @if (filter === 'active') {
+              <ion-button fill="outline" color="danger" (click)="promptDelete(car)" class="action-btn delete-btn">
+                <ion-icon name="trash-outline" slot="start"></ion-icon>
+                Deaktivizo
+              </ion-button>
+            }
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+  }
+
+  <!-- FAB Shto makinë -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openAddModal()" color="secondary" class="fab-add">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>
+
+<!-- ─── Modal: Shto Makinë ──────────────────────────────────────── -->
+<ion-modal [isOpen]="isAddModalOpen" (didDismiss)="cancelAdd()" [initialBreakpoint]="0.45" [breakpoints]="[0, 0.45]">
+  <ng-template>
+    <div class="modal-content">
+      <h2 class="modal-title">Shto Makinë të Re</h2>
+      <ion-item class="modal-input-item" lines="none">
+        <ion-label position="stacked">Modeli i Makinës</ion-label>
+        <ion-input
+          [(ngModel)]="newCarModel"
+          placeholder="p.sh. Toyota Corolla"
+          [autofocus]="true"
+        ></ion-input>
+      </ion-item>
+      <div class="modal-actions">
+        <ion-button fill="outline" color="medium" (click)="cancelAdd()" expand="block" class="modal-btn">
+          Anulo
+        </ion-button>
+        <ion-button fill="solid" color="primary" (click)="confirmAddCar()"
+          [disabled]="!newCarModel.trim()" expand="block" class="modal-btn">
+          Ruaj
+        </ion-button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<!-- ─── Alert: Konfirmo Fshirjen ───────────────────────────────── -->
+<ion-alert
+  [isOpen]="deleteAlertOpen"
+  (didDismiss)="deleteAlertOpen = false"
+  header="Deaktivizo Makinën"
+  [message]="'A jeni i sigurt që doni ta deaktivizoni ' + carToDelete?.model + '? Makina do të shënohet si joaktive.'"
+  [buttons]="deleteAlertButtons"
+></ion-alert>
