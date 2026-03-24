@@ -47,16 +47,12 @@ export class ReservationPage implements OnInit {
   startModalOpen = false;
   endModalOpen   = false;
 
-  closeStartModal(e: any) {
-    if (e?.target?.tagName?.toLowerCase() === 'ion-modal') {
-      this.startModalOpen = false;
-    }
+  closeStartModal() {
+    this.startModalOpen = false;
   }
 
-  closeEndModal(e: any) {
-    if (e?.target?.tagName?.toLowerCase() === 'ion-modal') {
-      this.endModalOpen = false;
-    }
+  closeEndModal() {
+    this.endModalOpen = false;
   }
 
 
