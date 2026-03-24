@@ -8,7 +8,7 @@ import {
   IonButton, IonIcon, IonCard, IonCardContent, IonCardHeader,
   IonCardTitle, IonFab, IonFabButton, IonList, IonItem,
   IonLabel, IonAlert, IonModal, IonInput,
-  AlertController, ModalController, IonSegment, IonSegmentButton, IonBadge
+  AlertController, ModalController, IonSegment, IonSegmentButton, IonBadge, IonSkeletonText
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -27,7 +27,8 @@ import { AuthService } from '../../services/auth.service';
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
     IonButton, IonIcon, IonCard, IonCardContent, IonCardHeader,
     IonCardTitle, IonFab, IonFabButton, IonItem,
-    IonLabel, IonAlert, IonModal, IonInput, IonSegment, IonSegmentButton, IonBadge
+    IonLabel, IonAlert, IonModal, IonInput, IonSegment, IonSegmentButton, IonBadge,
+    IonSkeletonText, IonList
   ],
   templateUrl: './cars.page.html',
   styleUrls: ['./cars.page.scss'],
@@ -35,6 +36,7 @@ import { AuthService } from '../../services/auth.service';
 export class CarsPage implements OnInit {
   filter: 'active' | 'all' = 'active';
   cars$!: Observable<Car[]>;
+  loading = false;
 
   /* Modal shto makinë */
   isAddModalOpen = false;
@@ -60,7 +62,20 @@ export class CarsPage implements OnInit {
   }
 
   loadCars(): void {
+    this.loading = true;
     this.cars$ = this.filter === 'active' ? this.data.getCars$() : this.data.getAllCars$();
+    
+    // Për të ndaluar loading kur vjen vlera e parë
+    this.cars$.subscribe({
+      next: () => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   filterChanged(): void {

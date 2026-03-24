@@ -5,7 +5,7 @@ import { CurrencyPipe } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
   IonBackButton, IonButton, IonIcon, IonItem, IonLabel,
-  IonInput, IonDatetime, IonModal
+  IonInput, IonDatetime, IonModal, IonSpinner
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { saveOutline, calendarOutline, warningOutline, carOutline } from 'ionicons/icons';
@@ -19,7 +19,7 @@ import { Car } from '../../models/car.model';
     FormsModule, CurrencyPipe,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
     IonBackButton, IonButton, IonIcon, IonItem, IonLabel,
-    IonInput, IonDatetime, IonModal
+    IonInput, IonDatetime, IonModal, IonSpinner
   ],
   templateUrl: './reservation.page.html',
   styleUrls: ['./reservation.page.scss'],
@@ -41,6 +41,7 @@ export class ReservationPage implements OnInit {
   isAvailable     = true;
   conflictMessage = '';
   saving          = false;
+  checkingAvailability = false;
 
   // Modalet e datetime
   startModalOpen = false;
@@ -120,6 +121,15 @@ export class ReservationPage implements OnInit {
         return;
       }
 
+      // Minimum 1 orë rezervim
+      if (end - start < 1000 * 60 * 60) {
+        this.totalPrice      = 0;
+        this.diffDays        = 0;
+        this.isAvailable     = false;
+        this.conflictMessage = 'Rezervimi duhet të jetë të paktën 1 orë.';
+        return;
+      }
+
       const diffMs = end - start;
       const dDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
       this.diffDays = Math.max(1, dDays);
@@ -127,6 +137,7 @@ export class ReservationPage implements OnInit {
       this.totalPrice = DataService.calcTotalPrice(this.startDate, this.endDate, this.pricePerDay || 0);
 
       // Kontrollim disponueshmërie asinkron
+      this.checkingAvailability = true;
       try {
         const avail = await this.data.checkAvailability(this.carId, this.startDate, this.endDate, this.resId);
         this.isAvailable = avail;
@@ -136,6 +147,9 @@ export class ReservationPage implements OnInit {
       } catch (e) {
         this.isAvailable = false;
         this.conflictMessage = 'Gabim gjatë kontrollit të disponueshmërisë.';
+      } finally {
+        this.checkingAvailability = false;
+        this.cdr.detectChanges();
       }
     }
   }
@@ -163,7 +177,8 @@ export class ReservationPage implements OnInit {
       !!this.endDate &&
       this.totalPrice > 0 &&
       this.isAvailable &&
-      !this.saving
+      !this.saving &&
+      !this.checkingAvailability
     );
   }
 
@@ -188,7 +203,7 @@ export class ReservationPage implements OnInit {
           pricePerDay: this.pricePerDay || 0,
         });
       }
-      this.router.navigate(['/cars', this.carId, 'history']);
+      this.router.navigate(['/cars', this.carId, 'history'], { replaceUrl: true });
     } catch (e: any) {
       this.conflictMessage = e.message;
       this.isAvailable     = false;

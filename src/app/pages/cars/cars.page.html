@@ -27,15 +27,33 @@
   </div>
 
   <!-- Lista e makinave -->
-  @let carList = (cars$ | async) ?? [];
-  @if (carList.length === 0) {
-    <div class="empty-state">
-      <ion-icon name="car-sport-outline" class="empty-icon"></ion-icon>
-      <p>Nuk ka makina aktive.</p>
-      <p class="empty-hint">Shtoni makinën e parë me butonin "+".</p>
+  @if (loading) {
+    <div style="padding: 0 8px;">
+      @for (i of [1,2,3]; track i) {
+        <ion-card class="car-card">
+          <ion-card-header>
+            <ion-skeleton-text animated style="width: 60%; height: 24px; border-radius: 4px;"></ion-skeleton-text>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="car-actions">
+              <ion-skeleton-text animated style="width: 30%; height: 36px; border-radius: 8px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 30%; height: 36px; border-radius: 8px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 30%; height: 36px; border-radius: 8px;"></ion-skeleton-text>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
     </div>
   } @else {
-    @for (car of carList; track car.id) {
+    @let carList = (cars$ | async) ?? [];
+    @if (carList.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="car-sport-outline" class="empty-icon"></ion-icon>
+        <p>Nuk ka makina aktive.</p>
+        <p class="empty-hint">Shtoni makinën e parë me butonin "+".</p>
+      </div>
+    } @else {
+      @for (car of carList; track car.id) {
       <ion-card class="car-card">
         <ion-card-header>
           <ion-card-title>
@@ -74,6 +92,7 @@
       </ion-card>
     }
   }
+}
 
   <!-- FAB Shto makinë -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">

@@ -6,7 +6,7 @@ import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
   IonBackButton, IonCard, IonCardContent, IonIcon,
   IonAlert, AlertController,
-  IonButton, IonBadge
+  IonButton, IonBadge, IonSkeletonText
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
@@ -24,7 +24,7 @@ import { Car } from '../../models/car.model';
     AsyncPipe, CurrencyPipe,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
     IonBackButton, IonCard, IonCardContent, IonIcon,
-    IonAlert, IonButton, IonBadge
+    IonAlert, IonButton, IonBadge, IonSkeletonText
   ],
   templateUrl: './history.page.html',
   styleUrls: ['./history.page.scss'],
@@ -32,6 +32,7 @@ import { Car } from '../../models/car.model';
 export class HistoryPage implements OnInit {
   car: Car | undefined;
   reservations$!: Observable<Reservation[]>;
+  loading = false;
 
   deleteAlertOpen = false;
   resToDelete: Reservation | null = null;
@@ -56,7 +57,20 @@ export class HistoryPage implements OnInit {
       this.car = c;
       this.cdr.detectChanges();
     });
+    
+    this.loading = true;
     this.reservations$ = this.data.getReservationsForCar$(carId);
+    
+    this.reservations$.subscribe({
+      next: () => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   formatDate(iso: string): string {

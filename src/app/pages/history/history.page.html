@@ -30,15 +30,37 @@
   }
 
   <!-- Lista rezervimeve -->
-  @let resList = (reservations$ | async) ?? [];
-  @if (resList.length === 0) {
-    <div class="empty-state">
-      <ion-icon name="calendar-outline" class="empty-icon"></ion-icon>
-      <p>Nuk ka rezervime për këtë makinë.</p>
+  @if (loading) {
+    <div class="reservations-list" style="padding: 0 8px;">
+      @for (i of [1,2]; track i) {
+        <ion-card class="res-card">
+          <ion-card-content>
+            <div style="margin-bottom: 12px;">
+              <ion-skeleton-text animated style="width: 40%; height: 16px; margin-bottom: 8px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%; height: 20px;"></ion-skeleton-text>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <ion-skeleton-text animated style="width: 30%; height: 16px; margin-bottom: 8px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 70%; height: 20px;"></ion-skeleton-text>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+              <ion-skeleton-text animated style="width: 40%; height: 20px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 20%; height: 24px;"></ion-skeleton-text>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
     </div>
   } @else {
-    <div class="reservations-list">
-      @for (res of resList; track res.id) {
+    @let resList = (reservations$ | async) ?? [];
+    @if (resList.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="calendar-outline" class="empty-icon"></ion-icon>
+        <p>Nuk ka rezervime për këtë makinë.</p>
+      </div>
+    } @else {
+      <div class="reservations-list">
+        @for (res of resList; track res.id) {
         <ion-card class="res-card">
           <ion-card-content>
 
@@ -92,6 +114,7 @@
       }
     </div>
   }
+}
 
   <ion-alert
     [isOpen]="deleteAlertOpen"
