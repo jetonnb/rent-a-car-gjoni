@@ -4,10 +4,10 @@ import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+  IonHeader, IonToolbar, IonContent, IonButtons,
   IonButton, IonIcon, IonCard, IonCardContent, IonCardHeader,
   IonCardTitle, IonFab, IonFabButton, IonItem,
-  IonLabel, IonAlert, IonModal, IonInput,
+  IonLabel, IonModal, IonInput,
   ModalController, IonSegment, IonSegmentButton, IonBadge, IonSkeletonText
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -25,10 +25,10 @@ import { UiService } from '../../services/ui.service';
   standalone: true,
   imports: [
     AsyncPipe, FormsModule,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+    IonHeader, IonToolbar, IonContent, IonButtons,
     IonButton, IonIcon, IonCard, IonCardContent, IonCardHeader,
     IonCardTitle, IonFab, IonFabButton, IonItem,
-    IonLabel, IonAlert, IonModal, IonInput, IonSegment, IonSegmentButton, IonBadge,
+    IonLabel, IonModal, IonInput, IonSegment, IonSegmentButton, IonBadge,
     IonSkeletonText
   ],
   templateUrl: './cars.page.html',

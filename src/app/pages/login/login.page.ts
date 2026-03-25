@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent, IonCard, IonCardContent, IonItem, IonLabel,
-  IonInput, IonButton, IonText, IonIcon, IonSpinner
+  IonInput, IonButton, IonText, IonSpinner
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { carOutline, lockClosedOutline, personOutline } from 'ionicons/icons';
@@ -15,7 +15,7 @@ import { AuthService } from '../../services/auth.service';
   imports: [
     FormsModule,
     IonContent, IonCard, IonCardContent, IonItem, IonLabel,
-    IonInput, IonButton, IonText, IonIcon, IonSpinner
+    IonInput, IonButton, IonText, IonSpinner
   ],
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
