@@ -1,6 +1,6 @@
 export const environment = {
-  production: false,
-  secure: false,
+  production: true,
+  secure: true,
   firebase: {
     apiKey: "AIzaSyCz5FApQLj-_9D_OSc4DmLDH4WQyvg_9IE",
     authDomain: "rentacargjoni.firebaseapp.com",

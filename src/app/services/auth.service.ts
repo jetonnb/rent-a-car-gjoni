@@ -1,41 +1,39 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Auth, authState, signInWithEmailAndPassword, signOut, User } from '@angular/fire/auth';
-import { Observable, map } from 'rxjs';
+import { Observable, shareReplay, map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private auth = inject(Auth);
+  private auth   = inject(Auth);
   private router = inject(Router);
 
-  /** Observable që tregon nëse përdoruesi është i kyçur */
-  isLoggedIn$: Observable<boolean> = authState(this.auth).pipe(
-    map((user: User | null) => !!user)
+  /** Single shared source — avoids multiple subscriptions to authState */
+  private _state$: Observable<User | null> = authState(this.auth).pipe(
+    shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  private _currentUser: User | null = null;
+  /** Emits true when a user is signed in */
+  isLoggedIn$: Observable<boolean> = this._state$.pipe(map(user => !!user));
 
-  constructor() {
-    // Monitorojmë gjendjen e kyçjes
-    authState(this.auth).subscribe(user => {
-      this._currentUser = user;
-    });
+  get currentUser(): User | null {
+    // Synchronous check via the cached subject value isn't guaranteed;
+    // use isLoggedIn$ / currentUser$ in async contexts where possible.
+    return (this.auth as any).currentUser ?? null;
   }
 
   get isLoggedIn(): boolean {
-    return !!this._currentUser;
+    return !!this.currentUser;
   }
 
-  /** Kyçja asinkrone me username ose email */
+  /** Sign in — accepts plain username (appends @gjoni.com) or full email */
   async login(usernameOrEmail: string, password: string): Promise<void> {
-    let email = usernameOrEmail.trim();
-    if (!email.includes('@')) {
-      email = `${email}@gjoni.com`;
-    }
+    const email = usernameOrEmail.trim().includes('@')
+      ? usernameOrEmail.trim()
+      : `${usernameOrEmail.trim()}@gjoni.com`;
     await signInWithEmailAndPassword(this.auth, email, password);
   }
 
-  /** Çkyçja nga Firebase */
   async logout(): Promise<void> {
     await signOut(this.auth);
     this.router.navigate(['/login']);

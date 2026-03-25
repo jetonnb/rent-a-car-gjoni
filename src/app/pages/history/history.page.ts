@@ -1,6 +1,6 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { AsyncPipe, CurrencyPipe } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
@@ -29,10 +29,11 @@ import { Car } from '../../models/car.model';
   templateUrl: './history.page.html',
   styleUrls: ['./history.page.scss'],
 })
-export class HistoryPage implements OnInit {
+export class HistoryPage implements OnInit, OnDestroy {
   car: Car | undefined;
   reservations$!: Observable<Reservation[]>;
   loading = false;
+  private _subs: Subscription[] = [];
 
   constructor(
     private route: ActivatedRoute, 
@@ -49,24 +50,32 @@ export class HistoryPage implements OnInit {
 
   ngOnInit(): void {
     const carId = this.route.snapshot.paramMap.get('id') ?? '';
-    this.data.getCarById$(carId).subscribe(c => {
-      this.car = c;
-      this.cdr.detectChanges();
-    });
-    
+    this._subs.push(
+      this.data.getCarById$(carId).subscribe(c => {
+        this.car = c;
+        this.cdr.detectChanges();
+      })
+    );
+
     this.loading = true;
     this.reservations$ = this.data.getReservationsForCar$(carId);
-    
-    this.reservations$.subscribe({
-      next: () => {
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.loading = false;
-        this.cdr.detectChanges();
-      }
-    });
+
+    this._subs.push(
+      this.reservations$.subscribe({
+        next: () => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this._subs.forEach(s => s.unsubscribe());
   }
 
   formatDate(iso: string): string {

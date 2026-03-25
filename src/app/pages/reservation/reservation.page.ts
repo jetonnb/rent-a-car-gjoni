@@ -1,7 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
+import { Subscription } from 'rxjs';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
   IonBackButton, IonButton, IonIcon, IonItem, IonLabel,
@@ -25,7 +26,7 @@ import { Car } from '../../models/car.model';
   templateUrl: './reservation.page.html',
   styleUrls: ['./reservation.page.scss'],
 })
-export class ReservationPage implements OnInit {
+export class ReservationPage implements OnInit, OnDestroy {
   car: Car | undefined;
   carId = '';
   resId = '';
@@ -43,7 +44,8 @@ export class ReservationPage implements OnInit {
   validationMsg   = '';
   saving          = false;
   checkingAvailability = false;
-  initializing    = true;  // suppress validation messages on load
+  initializing    = true;
+  private _subs: Subscription[] = [];
 
   // Modalet e datetime
   startModalOpen = false;
@@ -72,19 +74,19 @@ export class ReservationPage implements OnInit {
     this.carId = this.route.snapshot.paramMap.get('id') ?? '';
     this.resId = this.route.snapshot.paramMap.get('resId') ?? '';
     
-    this.data.getCarById$(this.carId).subscribe(c => this.car = c);
+    this._subs.push(this.data.getCarById$(this.carId).subscribe(c => this.car = c));
 
     if (this.resId) {
-      this.data.getReservationById$(this.resId).subscribe(async res => {
+      this._subs.push(this.data.getReservationById$(this.resId).subscribe(async res => {
         if (res) {
-          this.clientName = res.clientName;
-          this.startDate = res.startDate.substring(0, 16);
-          this.endDate = res.endDate.substring(0, 16);
+          this.clientName  = res.clientName;
+          this.startDate   = res.startDate.substring(0, 16);
+          this.endDate     = res.endDate.substring(0, 16);
           this.pricePerDay = res.pricePerDay;
           await this.recalculate();
           this.cdr.detectChanges();
         }
-      });
+      }));
     } else {
       const pad = (n: number) => n < 10 ? '0' + n : n;
       const toLocalISO = (d: Date) => 
@@ -105,6 +107,10 @@ export class ReservationPage implements OnInit {
         console.error('Gabim gjatë inicializimit:', e);
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    this._subs.forEach(s => s.unsubscribe());
   }
 
   /** Rillogaritje automatike sa herë ndryshon çdo fushë */

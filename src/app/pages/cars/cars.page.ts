@@ -1,6 +1,6 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -34,10 +34,11 @@ import { UiService } from '../../services/ui.service';
   templateUrl: './cars.page.html',
   styleUrls: ['./cars.page.scss'],
 })
-export class CarsPage implements OnInit {
+export class CarsPage implements OnInit, OnDestroy {
   filter: 'active' | 'all' = 'active';
   cars$!: Observable<Car[]>;
   loading = false;
+  private _sub?: Subscription;
 
   /* Modal shto makinë */
   isAddModalOpen = false;
@@ -62,9 +63,10 @@ export class CarsPage implements OnInit {
   loadCars(): void {
     this.loading = true;
     this.cars$ = this.filter === 'active' ? this.data.getCars$() : this.data.getAllCars$();
-    
-    // Për të ndaluar loading kur vjen vlera e parë
-    this.cars$.subscribe({
+
+    // Stop the loading spinner on first emission
+    this._sub?.unsubscribe();
+    this._sub = this.cars$.subscribe({
       next: () => {
         this.loading = false;
         this.cdr.detectChanges();
@@ -74,6 +76,10 @@ export class CarsPage implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this._sub?.unsubscribe();
   }
 
   filterChanged(): void {

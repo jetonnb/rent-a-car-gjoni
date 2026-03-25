@@ -34,6 +34,13 @@ export class LoginPage {
     addIcons({ carOutline, lockClosedOutline, personOutline });
   }
 
+  ionViewWillEnter(): void {
+    this.username = '';
+    this.password = '';
+    this.error    = '';
+    this.cdr.detectChanges();
+  }
+
   async login(): Promise<void> {
     this.error   = '';
     
