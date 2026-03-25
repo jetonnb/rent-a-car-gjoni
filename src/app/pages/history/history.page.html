@@ -15,9 +15,11 @@
       <ion-icon name="car-outline" class="banner-icon"></ion-icon>
       <div class="banner-info">
         <p class="banner-label">Makina</p>
-        <p class="banner-model">
+        <p class="banner-model" style="font-size: 24px; font-weight: 800; margin-top: 4px;">
           {{ car.model }}
-          @if (!car.isActive) {
+          @if (car.isActive) {
+            <ion-badge color="success" style="margin-left: 8px;">Aktive</ion-badge>
+          } @else {
             <ion-badge color="danger" style="margin-left: 8px;">Joaktive</ion-badge>
             <ion-button fill="solid" color="success" size="small" (click)="reactivateCar()" style="height: 24px; --padding-start: 8px; --padding-end: 8px; margin-left:8px">
               <ion-icon name="refresh-outline" slot="start" style="margin-right: 4px; font-size: 14px;"></ion-icon>
@@ -68,8 +70,8 @@
             <div class="res-row">
               <ion-icon name="person-outline" class="row-icon"></ion-icon>
               <div>
-                <p class="row-label">Klienti</p>
-                <p class="row-value">{{ res.clientName }}</p>
+                <p class="row-label" style="font-weight: 700; color: var(--ion-color-primary);">Klienti</p>
+                <p class="row-value" style="font-size: 18px; font-weight: 500;">{{ res.clientName }}</p>
               </div>
             </div>
 
@@ -92,9 +94,9 @@
             </div>
 
             <!-- Çmimi -->
-            <div class="price-row">
-              <span class="price-per-day">{{ getDays(res) }} ditë x {{ res.pricePerDay }}€</span>
-              <span class="total-price">{{ res.totalPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
+            <div class="price-row" style="background: rgba(var(--ion-color-primary-rgb), 0.05); padding: 12px; border-radius: 8px;">
+              <span class="price-per-day" style="font-weight: 600;">{{ getDays(res) }} ditë x {{ res.pricePerDay }}€</span>
+              <span class="total-price" style="font-size: 22px; font-weight: 800; color: var(--ion-color-primary);">{{ res.totalPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
             </div>
 
             <!-- Veprimet -->
@@ -115,13 +117,5 @@
     </div>
   }
 }
-
-  <ion-alert
-    [isOpen]="deleteAlertOpen"
-    header="Konfirmim"
-    message="A jeni të sigurt që dëshironi të fshini këtë rezervim?"
-    [buttons]="deleteAlertButtons"
-    (didDismiss)="deleteAlertOpen = false">
-  </ion-alert>
 
 </ion-content>

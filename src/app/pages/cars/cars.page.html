@@ -1,12 +1,17 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>
-      <ion-icon name="car-sport-outline" class="title-icon"></ion-icon>
-      Makinat
-    </ion-title>
+    <ion-buttons slot="start" style="padding-left: 40px;">
+      <div style="display: flex; align-items: center;">
+        <img src="/logo (2).png" 
+             style="height: 36px; width: auto; filter: brightness(0) invert(1);" 
+             alt="Logo">
+        <span style="font-weight: 700; font-size: 19px; color: #fff;">Rent a Car "Gjoni"</span>
+      </div>
+    </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button (click)="logout()" fill="clear" class="logout-btn" title="Dil">
-        <ion-icon name="log-out-outline" slot="icon-only" style="font-size:24px; color:#fff"></ion-icon>
+      <ion-button (click)="logout()" fill="clear" class="logout-btn">
+        <span style="font-size: 14px; margin-right: 6px; font-weight: 600; color: #fff;">Dil</span>
+        <ion-icon name="log-out-outline" slot="end" style="font-size:24px; color:#fff"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -56,16 +61,20 @@
       @for (car of carList; track car.id) {
       <ion-card class="car-card">
         <ion-card-header>
-          <ion-card-title>
+          <ion-card-title style="font-size: 22px; font-weight: 800;">
             {{ car.model }}
-            @if (car.isActive) {
+            @if (filter === 'active') {
               @if (car.isReserved) {
                 <ion-badge color="warning" style="margin-left: 8px;">E Rezervuar</ion-badge>
               } @else {
                 <ion-badge color="success" style="margin-left: 8px;">E lirë për çdo datë</ion-badge>
               }
             } @else {
-              <ion-badge color="danger" style="margin-left: 8px;">Jo Aktive</ion-badge>
+              @if (car.isActive) {
+                <ion-badge color="success" style="margin-left: 8px;">Aktive</ion-badge>
+              } @else {
+                <ion-badge color="danger" style="margin-left: 8px;">Jo Aktive</ion-badge>
+              }
             }
           </ion-card-title>
         </ion-card-header>
@@ -129,11 +138,4 @@
   </ng-template>
 </ion-modal>
 
-<!-- ─── Alert: Konfirmo Fshirjen ───────────────────────────────── -->
-<ion-alert
-  [isOpen]="deleteAlertOpen"
-  (didDismiss)="deleteAlertOpen = false"
-  header="Deaktivizo Makinën"
-  [message]="'A jeni i sigurt që doni ta deaktivizoni ' + carToDelete?.model + '? Makina do të shënohet si joaktive.'"
-  [buttons]="deleteAlertButtons"
-></ion-alert>
+

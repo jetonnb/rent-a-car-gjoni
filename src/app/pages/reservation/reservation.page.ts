@@ -10,6 +10,7 @@ import {
 import { addIcons } from 'ionicons';
 import { saveOutline, calendarOutline, warningOutline, carOutline } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
+import { UiService } from '../../services/ui.service';
 import { Car } from '../../models/car.model';
 
 @Component({
@@ -39,7 +40,7 @@ export class ReservationPage implements OnInit {
   totalPrice      = 0;
   diffDays        = 0;
   isAvailable     = true;
-  conflictMessage = '';
+  validationMsg   = '';
   saving          = false;
   checkingAvailability = false;
 
@@ -60,7 +61,8 @@ export class ReservationPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private data: DataService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private ui: UiService
   ) {
     addIcons({ saveOutline, calendarOutline, warningOutline, carOutline });
   }
@@ -105,6 +107,8 @@ export class ReservationPage implements OnInit {
 
   /** Rillogaritje automatike sa herë ndryshon çdo fushë */
   async recalculate(): Promise<void> {
+    this.validationMsg = '';
+    
     if (this.startDate && this.endDate) {
       const start = new Date(this.startDate).getTime();
       const end   = new Date(this.endDate).getTime();
@@ -113,7 +117,7 @@ export class ReservationPage implements OnInit {
         this.totalPrice      = 0;
         this.diffDays        = 0;
         this.isAvailable     = false;
-        this.conflictMessage = 'Data e kthimit duhet të jetë pas datës së marrjes.';
+        this.validationMsg   = 'Data e kthimit duhet të jetë pas datës së marrjes.';
         return;
       }
 
@@ -122,7 +126,7 @@ export class ReservationPage implements OnInit {
         this.totalPrice      = 0;
         this.diffDays        = 0;
         this.isAvailable     = false;
-        this.conflictMessage = 'Rezervimi duhet të jetë të paktën 1 orë.';
+        this.validationMsg   = 'Rezervimi duhet të jetë të paktën 1 orë.';
         return;
       }
 
@@ -137,12 +141,13 @@ export class ReservationPage implements OnInit {
       try {
         const avail = await this.data.checkAvailability(this.carId, this.startDate, this.endDate, this.resId);
         this.isAvailable = avail;
-        this.conflictMessage = avail
-          ? ''
-          : 'Kjo makinë është e rezervuar në këto data. Ju lutem zgjidhni data të tjera.';
+        
+        if (!this.isAvailable) {
+          this.validationMsg = 'Disa nga këto data janë të zëna nga një rezervim tjetër. Ju lutem shikoni historin dhe provoni një periudhë tjetër.';
+        }
       } catch (e) {
         this.isAvailable = false;
-        this.conflictMessage = 'Gabim gjatë kontrollit të disponueshmërisë.';
+        this.validationMsg = 'Ndodhi një gabim gjatë kontrollit të disponueshmërisë.';
       } finally {
         this.checkingAvailability = false;
         this.cdr.detectChanges();
@@ -153,16 +158,22 @@ export class ReservationPage implements OnInit {
   onStartDateChange(event: any): void {
     const raw = event?.detail?.value;
     if (raw) {
-      this.startDate = typeof raw === 'string' ? raw.substring(0, 16) : raw;
-      this.recalculate();
+      const newValue = typeof raw === 'string' ? raw.substring(0, 16) : raw;
+      if (newValue !== this.startDate) {
+        this.startDate = newValue;
+        this.recalculate();
+      }
     }
   }
 
   onEndDateChange(event: any): void {
     const raw = event?.detail?.value;
     if (raw) {
-      this.endDate = typeof raw === 'string' ? raw.substring(0, 16) : raw;
-      this.recalculate();
+      const newValue = typeof raw === 'string' ? raw.substring(0, 16) : raw;
+      if (newValue !== this.endDate) {
+        this.endDate = newValue;
+        this.recalculate();
+      }
     }
   }
 
@@ -179,32 +190,48 @@ export class ReservationPage implements OnInit {
   }
 
   async save(): Promise<void> {
-    if (!this.canSave) return;
+    // Validim manual për feedback më të mirë (Age 50+)
+    if (!this.clientName.trim()) {
+      this.ui.showError('Ju lutem shkruani emrin e klientit për të vazhduar.');
+      return;
+    }
+    
+    if (!this.pricePerDay || this.pricePerDay <= 0) {
+      this.ui.showError('Ju lutem shkruani çmimin për ditë (p.sh. 30).');
+      return;
+    }
+
+    if (!this.isAvailable) {
+      this.ui.showError(this.validationMsg || 'Kjo makinë nuk është e lirë për datat e zgjedhura.');
+      return;
+    }
+
+    const loader = await this.ui.showLoading(this.resId ? 'Duke përditësuar rezervimin...' : 'Duke ruajtur rezervimin...');
     this.saving = true;
+    
     try {
+      const payload = {
+        carId:      this.carId,
+        clientName: this.clientName.trim(),
+        startDate:  this.startDate,
+        endDate:    this.endDate,
+        pricePerDay: this.pricePerDay || 0,
+      };
+
       if (this.resId) {
-        await this.data.updateReservation(this.resId, {
-          carId:      this.carId,
-          clientName: this.clientName.trim(),
-          startDate:  this.startDate,
-          endDate:    this.endDate,
-          pricePerDay: this.pricePerDay || 0,
-        });
+        await this.data.updateReservation(this.resId, payload);
       } else {
-        await this.data.addReservation({
-          carId:      this.carId,
-          clientName: this.clientName.trim(),
-          startDate:  this.startDate,
-          endDate:    this.endDate,
-          pricePerDay: this.pricePerDay || 0,
-        });
+        await this.data.addReservation(payload);
       }
+      
+      await this.ui.showSuccess('Rezervimi u ruajt me sukses!');
       this.router.navigate(['/cars', this.carId, 'history'], { replaceUrl: true });
     } catch (e: any) {
-      this.conflictMessage = e.message;
-      this.isAvailable     = false;
+      this.ui.showError(e.message || 'Ndodhi një gabim gjatë ruajtjes. Ju lutem kontrolloni të dhënat.');
+      this.isAvailable = false;
     } finally {
       this.saving = false;
+      loader.dismiss();
     }
   }
 

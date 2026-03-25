@@ -15,7 +15,7 @@
       <ion-icon name="car-outline" class="banner-icon"></ion-icon>
       <div>
         <p class="banner-label">Makina</p>
-        <p class="banner-model">{{ car.model }}</p>
+        <p class="banner-model" style="font-size: 22px; font-weight: 800;">{{ car.model }}</p>
       </div>
     </div>
   }
@@ -25,7 +25,7 @@
 
     <!-- Emri i klientit -->
     <ion-item class="form-item" lines="none">
-      <ion-label position="stacked">Emri i Klientit *</ion-label>
+      <ion-label position="stacked" style="font-weight: 800; font-size: 18px !important; color: var(--ion-color-primary);">Emri i Klientit *</ion-label>
       <ion-input
         [(ngModel)]="clientName"
         placeholder="p.sh. Artan Hoxha"
@@ -35,15 +35,14 @@
 
     <!-- Data dhe Ora e Marrjes -->
     <div class="datetime-section">
-      <p class="datetime-label">Data dhe Ora e Marrjes *</p>
+      <p class="datetime-label" style="font-weight: 800; font-size: 18px; color: var(--ion-color-primary); margin-bottom: 8px;">Data dhe Ora e Marrjes *</p>
       <div class="datetime-row">
         <div class="datetime-display" (click)="startModalOpen = true">
           <ion-icon name="calendar-outline"></ion-icon>
           <span>{{ formatDate(startDate) }}</span>
         </div>
       </div>
-      <ion-modal [isOpen]="startModalOpen" (didDismiss)="startModalOpen = false"
-                 [keepContentsMounted]="true">
+      <ion-modal [isOpen]="startModalOpen" (didDismiss)="startModalOpen = false">
         <ng-template>
           <div class="dt-modal-wrapper">
             <p class="dt-modal-title">Data dhe Ora e Marrjes</p>
@@ -69,15 +68,14 @@
 
     <!-- Data dhe Ora e Kthimit -->
     <div class="datetime-section">
-      <p class="datetime-label">Data dhe Ora e Kthimit *</p>
+      <p class="datetime-label" style="font-weight: 800; font-size: 18px; color: var(--ion-color-primary); margin-bottom: 8px;">Data dhe Ora e Kthimit *</p>
       <div class="datetime-row">
         <div class="datetime-display" (click)="endModalOpen = true">
           <ion-icon name="calendar-outline"></ion-icon>
           <span>{{ formatDate(endDate) }}</span>
         </div>
       </div>
-      <ion-modal [isOpen]="endModalOpen" (didDismiss)="endModalOpen = false"
-                 [keepContentsMounted]="true">
+      <ion-modal [isOpen]="endModalOpen" (didDismiss)="endModalOpen = false">
         <ng-template>
           <div class="dt-modal-wrapper">
             <p class="dt-modal-title">Data dhe Ora e Kthimit</p>
@@ -101,17 +99,28 @@
       </ion-modal>
     </div>
 
+    <!-- Mesazhi i Valdimit (Overlap / Invalid Range) -->
+    @if (validationMsg) {
+      <div class="validation-error-box">
+        <ion-icon name="warning-outline"></ion-icon>
+        <p>{{ validationMsg }}</p>
+      </div>
+    }
+
     <!-- Çmimi në Ditë -->
     <ion-item class="form-item" lines="none">
-      <ion-label position="stacked">Çmimi në Ditë (€) *</ion-label>
+      <ion-label position="stacked" style="font-weight: 800; font-size: 18px !important; color: var(--ion-color-primary);">Çmimi në Ditë (€) *</ion-label>
       <ion-input
         type="number"
         [(ngModel)]="pricePerDay"
         (ionInput)="recalculate()"
         [min]="1"
         inputmode="decimal"
+        placeholder="p.sh. 30"
       ></ion-input>
     </ion-item>
+
+    
 
     <!-- Çmimi Total (live) -->
     <div class="total-box" [class.total-error]="!isAvailable || totalPrice === 0">
@@ -123,7 +132,7 @@
           </p>
         }
       </div>
-      <p class="total-value">
+      <p class="total-value" style="font-size: 32px; font-weight: 900;">
         @if (totalPrice > 0 && isAvailable) {
           {{ totalPrice | currency:'EUR':'symbol':'1.0-0' }}
         } @else {
@@ -132,28 +141,13 @@
       </p>
     </div>
 
-    <!-- Gabim disponueshmërie / Loading -->
-    <div class="status-container">
-      @if (checkingAvailability) {
-        <div class="checking-box">
-          <ion-spinner name="crescent" size="small"></ion-spinner>
-          <p>Duke kontrolluar disponueshmërinë...</p>
-        </div>
-      } @else if (!isAvailable && conflictMessage) {
-        <div class="conflict-box">
-          <ion-icon name="warning-outline" class="conflict-icon"></ion-icon>
-          <p class="conflict-msg">{{ conflictMessage }}</p>
-        </div>
-      }
-    </div>
-
   </div>
 
   <!-- Butoni Ruaj -->
   <div class="save-section">
     <ion-button
       expand="block"
-      [disabled]="!canSave"
+      [disabled]="saving"
       (click)="save()"
       class="save-btn"
     >

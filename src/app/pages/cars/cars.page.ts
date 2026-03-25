@@ -6,9 +6,9 @@ import { FormsModule } from '@angular/forms';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
   IonButton, IonIcon, IonCard, IonCardContent, IonCardHeader,
-  IonCardTitle, IonFab, IonFabButton, IonList, IonItem,
+  IonCardTitle, IonFab, IonFabButton, IonItem,
   IonLabel, IonAlert, IonModal, IonInput,
-  AlertController, ModalController, IonSegment, IonSegmentButton, IonBadge, IonSkeletonText
+  ModalController, IonSegment, IonSegmentButton, IonBadge, IonSkeletonText
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -18,6 +18,7 @@ import {
 import { Car } from '../../models/car.model';
 import { DataService } from '../../services/data.service';
 import { AuthService } from '../../services/auth.service';
+import { UiService } from '../../services/ui.service';
 
 @Component({
   selector: 'app-cars',
@@ -28,7 +29,7 @@ import { AuthService } from '../../services/auth.service';
     IonButton, IonIcon, IonCard, IonCardContent, IonCardHeader,
     IonCardTitle, IonFab, IonFabButton, IonItem,
     IonLabel, IonAlert, IonModal, IonInput, IonSegment, IonSegmentButton, IonBadge,
-    IonSkeletonText, IonList
+    IonSkeletonText
   ],
   templateUrl: './cars.page.html',
   styleUrls: ['./cars.page.scss'],
@@ -42,17 +43,14 @@ export class CarsPage implements OnInit {
   isAddModalOpen = false;
   newCarModel    = '';
 
-  /* Alert fshirje */
-  deleteAlertOpen = false;
-  carToDelete: Car | null = null;
-  deleteAlertButtons: any[] = [];
+  /* Modal shto makinë */
 
   constructor(
     private data: DataService,
     private auth: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private alertCtrl: AlertController
+    private ui: UiService
   ) {
     addIcons({ addOutline, calendarOutline, timeOutline, trashOutline, logOutOutline, carSportOutline, refreshOutline });
   }
@@ -109,52 +107,45 @@ export class CarsPage implements OnInit {
     this.router.navigate(['/cars', car.id, 'history']);
   }
 
-  promptDelete(car: Car): void {
-    this.carToDelete = car;
-    this.deleteAlertButtons = [
-      {
-        text: 'Anulo',
-        role: 'cancel',
-        handler: () => { this.carToDelete = null; }
-      },
-      {
-        text: 'Po, Fshi',
-        role: 'destructive',
-        handler: async () => {
-          if (this.carToDelete) {
-            await this.data.softDeleteCar(this.carToDelete.id);
-            this.carToDelete = null;
-          }
-        }
+  async promptDelete(car: Car): Promise<void> {
+    const confirm = await this.ui.confirm(
+      'Çaktivizo Makinën',
+      `A jeni i sigurt që doni të çaktivizoni ${car.model}? Ajo nuk do të jet me e disponueshme per rezervim.`
+    );
+
+    if (confirm) {
+      const loader = await this.ui.showLoading('Duke çaktivizuar makinën...');
+      try {
+        await this.data.softDeleteCar(car.id);
+        await this.ui.showSuccess('Makina u çaktivizua me sukses.');
+      } catch (e) {
+        await this.ui.showError('Ndodhi një gabim. Ju lutem provoni përsëri.');
+      } finally {
+        loader.dismiss();
       }
-    ];
-    this.deleteAlertOpen = true;
-    this.cdr.detectChanges();
+    }
   }
 
   async reactivateCar(car: Car): Promise<void> {
-    await this.data.activateCar(car.id);
+    const loader = await this.ui.showLoading('Duke aktivizuar makinën...');
+    try {
+      await this.data.activateCar(car.id);
+      await this.ui.showSuccess('Makina u aktivizua me sukses.');
+    } catch (e) {
+      await this.ui.showError('Ndodhi një gabim gjatë aktivizimit.');
+    } finally {
+      loader.dismiss();
+    }
   }
 
   async logout(): Promise<void> {
-    const alert = await this.alertCtrl.create({
-      header: 'Dilni nga llogaria?',
-      message: 'A jeni i sigurt që doni të dilni?',
-      buttons: [
-        {
-          text: 'Anulo',
-          role: 'cancel'
-        },
-        {
-          text: 'Po, Dil',
-          role: 'destructive',
-          handler: () => {
-            this.auth.logout();
-          }
-        }
-      ]
-    });
+    const confirm = await this.ui.confirm(
+      'Dilni nga llogaria?',
+      'A jeni i sigurt që doni të dilni nga aplikacioni?'
+    );
 
-    await alert.present();
+    if (confirm) {
+      this.auth.logout();
+    }
   }
 }
