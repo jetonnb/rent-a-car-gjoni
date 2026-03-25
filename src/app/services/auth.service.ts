@@ -26,9 +26,13 @@ export class AuthService {
     return !!this._currentUser;
   }
 
-  /** Kyçja asinkrone me Firebase */
-  async login(email: string, password: string): Promise<void> {
-    await signInWithEmailAndPassword(this.auth, email.trim(), password);
+  /** Kyçja asinkrone me username ose email */
+  async login(usernameOrEmail: string, password: string): Promise<void> {
+    let email = usernameOrEmail.trim();
+    if (!email.includes('@')) {
+      email = `${email}@gjoni.com`;
+    }
+    await signInWithEmailAndPassword(this.auth, email, password);
   }
 
   /** Çkyçja nga Firebase */

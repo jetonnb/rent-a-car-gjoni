@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
@@ -21,33 +21,62 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage {
-  email    = '';
+  username = '';
   password = '';
   error    = '';
   loading  = false;
 
-  constructor(private auth: AuthService, private router: Router) {
+  constructor(
+    private auth: AuthService, 
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {
     addIcons({ carOutline, lockClosedOutline, personOutline });
   }
 
   async login(): Promise<void> {
     this.error   = '';
+    
+    // Validime paraprake (Age 50+)
+    if (!this.username.trim()) {
+      this.error = 'Ju lutem shkruani emrin e përdoruesit.';
+      return;
+    }
+    if (!this.password.trim()) {
+      this.error = 'Ju lutem shkruani fjalëkalimin.';
+      return;
+    }
+
     this.loading = true;
 
     try {
-      await this.auth.login(this.email.trim(), this.password);
+      //timeout 15s
+      const loginPromise = this.auth.login(this.username, this.password);
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject({code: 'timeout'}), 15000));
+
+      await Promise.race([loginPromise, timeoutPromise]);
       this.router.navigate(['/cars']);
     } catch (e: any) {
-      console.error('Gabim gjatë login:', e);
-      if (e.code === 'auth/invalid-credential' || e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password') {
-        this.error = 'Email ose fjalëkalimi është i gabuar.';
-      } else if (e.code === 'auth/too-many-requests') {
-        this.error = 'Shumë tentativa të dështuara. Ju lutem provoni më vonë.';
+      console.error('Gabim gjatë login (Detaje):', e);
+      
+      const errCode = e?.code || '';
+      const errMsg  = e?.message || '';
+
+      if (errCode === 'timeout') {
+        this.error = 'Shërbimi po vonohet shum. Ju lutem kontrolloni internetin dhe provoni përsëri.';
+      } else if (errCode.includes('invalid-credential') || 
+          errCode.includes('user-not-found') || 
+          errCode.includes('wrong-password') ||
+          errMsg.includes('INVALID_LOGIN_CREDENTIALS')) {
+        this.error = 'Emri i përdoruesit ose fjalëkalimi nuk është i saktë. Ju lutem kontrolloni të dhënat.';
+      } else if (errCode.includes('too-many-requests')) {
+        this.error = 'Shumë tentativa të dështuara. Ju lutem provoni përsëri pas pak minutash.';
       } else {
-        this.error = 'Ndodhi një gabim gjatë identifikimit. Provoni përsëri.';
+        this.error = 'Ndodhi një gabim gjatë identifikimit. Ju lutem provoni përsëri.';
       }
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 }

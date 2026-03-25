@@ -17,14 +17,13 @@
 
         <!-- Email -->
         <ion-item class="input-item" lines="none">
-          <ion-label position="stacked">Email</ion-label>
+          <ion-label position="stacked">Username</ion-label>
           <ion-input
-            type="email"
-            placeholder="admin@gjoni.al"
-            [(ngModel)]="email"
+            type="text"
+            placeholder="p.sh. admin"
+            [(ngModel)]="username"
             [disabled]="loading"
-            autocomplete="email"
-            inputmode="email"
+            autocomplete="username"
           ></ion-input>
         </ion-item>
 
@@ -54,7 +53,7 @@
           expand="block"
           class="login-btn"
           (click)="login()"
-          [disabled]="loading || !email || !password"
+          [disabled]="loading || !username || !password"
         >
           @if (loading) {
             <ion-spinner name="crescent"></ion-spinner>
