@@ -43,6 +43,7 @@ export class ReservationPage implements OnInit {
   validationMsg   = '';
   saving          = false;
   checkingAvailability = false;
+  initializing    = true;  // suppress validation messages on load
 
   // Modalet e datetime
   startModalOpen = false;
@@ -98,6 +99,7 @@ export class ReservationPage implements OnInit {
         this.endDate = toLocalISO(dayAfter);
 
         await this.recalculate();
+        this.initializing = false;
         this.cdr.detectChanges();
       } catch (e) {
         console.error('Gabim gjatë inicializimit:', e);
@@ -142,7 +144,7 @@ export class ReservationPage implements OnInit {
         const avail = await this.data.checkAvailability(this.carId, this.startDate, this.endDate, this.resId);
         this.isAvailable = avail;
         
-        if (!this.isAvailable) {
+        if (!this.isAvailable && !this.initializing) {
           this.validationMsg = 'Disa nga këto data janë të zëna nga një rezervim tjetër. Ju lutem shikoni historin dhe provoni një periudhë tjetër.';
         }
       } catch (e) {

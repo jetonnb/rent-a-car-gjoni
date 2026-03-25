@@ -274,30 +274,35 @@ export class DataService {
 
   async getEarliestFreeDate(carId: string): Promise<Date> {
     const now = new Date();
-    if (now.getMinutes() > 0) {
+    if (now.getMinutes() > 0 || now.getSeconds() > 0) {
       now.setHours(now.getHours() + 1);
     }
     now.setMinutes(0, 0, 0);
-
-    let proposed = now.getTime();
 
     return this.runInContext(async () => {
       const q = query(collection(this.firestore, this.RES_PATH), where('carId', '==', carId));
       const snap = await getDocs(q);
       const reservations = snap.docs
         .map(d => d.data() as any)
-        .sort((a, b) => {
-          const startA = a.startDate instanceof Timestamp ? a.startDate.toMillis() : new Date(a.startDate).getTime();
-          const startB = b.startDate instanceof Timestamp ? b.startDate.toMillis() : new Date(b.startDate).getTime();
-          return startA - startB;
-        });
+        .map(r => ({
+          start: r.startDate instanceof Timestamp ? r.startDate.toMillis() : new Date(r.startDate).getTime(),
+          end:   r.endDate   instanceof Timestamp ? r.endDate.toMillis()   : new Date(r.endDate).getTime(),
+        }))
+        .filter(r => r.end > Date.now()) // only future/active ones matter
+        .sort((a, b) => a.start - b.start);
 
-      for (const r of reservations) {
-        const rs = r.startDate instanceof Timestamp ? r.startDate.toMillis() : new Date(r.startDate).getTime();
-        const re = r.endDate instanceof Timestamp   ? r.endDate.toMillis()   : new Date(r.endDate).getTime();
-        
-        if (proposed >= rs && proposed < re) {
-          proposed = re;
+      let proposed = now.getTime();
+      let changed = true;
+
+      // Keep looping until no reservation overlaps with `proposed`
+      while (changed) {
+        changed = false;
+        for (const r of reservations) {
+          if (proposed >= r.start && proposed < r.end) {
+            proposed = r.end; // jump to end of this reservation
+            changed = true;
+            break;
+          }
         }
       }
 
