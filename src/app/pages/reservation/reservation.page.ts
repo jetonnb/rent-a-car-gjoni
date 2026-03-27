@@ -51,13 +51,30 @@ export class ReservationPage implements OnInit, OnDestroy {
   startModalOpen = false;
   endModalOpen   = false;
 
-  closeStartModal() {
+  // Fix për iOS blank calendar (render pas hapjes së modalit)
+  onStartModalPresent() {
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+      this.cdr.detectChanges();
+    }, 100);
+  }
+
+  onStartModalDismiss() {
     this.startModalOpen = false;
   }
 
-  closeEndModal() {
+  onEndModalPresent() {
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+      this.cdr.detectChanges();
+    }, 100);
+  }
+
+  onEndModalDismiss() {
     this.endModalOpen = false;
   }
+
+
 
 
   constructor(
@@ -70,12 +87,16 @@ export class ReservationPage implements OnInit, OnDestroy {
     addIcons({ saveOutline, calendarOutline, warningOutline, carOutline });
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.carId = this.route.snapshot.paramMap.get('id') ?? '';
     this.resId = this.route.snapshot.paramMap.get('resId') ?? '';
     
     this._subs.push(this.data.getCarById$(this.carId).subscribe(c => this.car = c));
 
+    this.initData();
+  }
+
+  private async initData(): Promise<void> {
     if (this.resId) {
       this._subs.push(this.data.getReservationById$(this.resId).subscribe(async res => {
         if (res) {
@@ -101,12 +122,16 @@ export class ReservationPage implements OnInit, OnDestroy {
         this.endDate = toLocalISO(dayAfter);
 
         await this.recalculate();
-        this.initializing = false;
-        this.cdr.detectChanges();
       } catch (e) {
         console.error('Gabim gjatë inicializimit:', e);
       }
     }
+    
+    // Një vonesë e vogël për të siguruar që CD e parë ka mbaruar
+    setTimeout(() => {
+      this.initializing = false;
+      this.cdr.detectChanges();
+    }, 0);
   }
 
   ngOnDestroy(): void {
@@ -164,6 +189,7 @@ export class ReservationPage implements OnInit, OnDestroy {
   }
 
   onStartDateChange(event: any): void {
+    if (this.initializing) return; // Shmang recalculate gjatë init që shkakton NG0100
     const raw = event?.detail?.value;
     if (raw) {
       const newValue = typeof raw === 'string' ? raw.substring(0, 16) : raw;
@@ -175,6 +201,7 @@ export class ReservationPage implements OnInit, OnDestroy {
   }
 
   onEndDateChange(event: any): void {
+    if (this.initializing) return;
     const raw = event?.detail?.value;
     if (raw) {
       const newValue = typeof raw === 'string' ? raw.substring(0, 16) : raw;
