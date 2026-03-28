@@ -246,4 +246,9 @@ ion-title {
   }
 }
 
-
+/* ─── Fix iOS WebKit: ion-datetime calendar day paint ────────── */
+ion-datetime::part(calendar-day),
+ion-datetime::part(calendar-day active) {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}

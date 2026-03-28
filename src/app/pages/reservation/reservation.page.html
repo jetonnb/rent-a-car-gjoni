@@ -48,11 +48,11 @@
             <span>{{ formatDate(startDate) }}</span>
           </div>
         </div>
-        <ion-modal [isOpen]="startModalOpen" (didPresent)="onStartModalPresent()" (didDismiss)="onStartModalDismiss()" [keepContentsMounted]="true">
+        <ion-modal [isOpen]="startModalOpen" (didPresent)="onStartModalPresent()" (didDismiss)="onStartModalDismiss()">
           <ng-template>
             <div class="dt-modal-wrapper">
               <p class="dt-modal-title">Data dhe Ora e Marrjes</p>
-              <ion-datetime
+              <ion-datetime #startDt
                 presentation="date-time"
                 [hourCycle]="'h23'"
                 [value]="startDate"
@@ -82,11 +82,11 @@
             <span>{{ formatDate(endDate) }}</span>
           </div>
         </div>
-        <ion-modal [isOpen]="endModalOpen" (didPresent)="onEndModalPresent()" (didDismiss)="onEndModalDismiss()" [keepContentsMounted]="true">
+        <ion-modal [isOpen]="endModalOpen" (didPresent)="onEndModalPresent()" (didDismiss)="onEndModalDismiss()">
           <ng-template>
             <div class="dt-modal-wrapper">
               <p class="dt-modal-title">Data dhe Ora e Kthimit</p>
-              <ion-datetime
+              <ion-datetime #endDt
                 presentation="date-time"
                 [hourCycle]="'h23'"
                 [value]="endDate"

@@ -150,6 +150,16 @@ ion-datetime {
   min-height: 350px;
 }
 
+/* iOS WebKit forced repaint — triggered by JS class toggle */
+ion-datetime.ios-repaint {
+  animation: iosForceRepaint 0.01s linear;
+}
+
+@keyframes iosForceRepaint {
+  from { transform: translateZ(0); }
+  to   { transform: translateZ(1px); }
+}
+
 .dt-close-btn {
   margin-top: 4px;
   --border-radius: 10px;

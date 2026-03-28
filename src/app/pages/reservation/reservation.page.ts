@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
@@ -51,12 +51,32 @@ export class ReservationPage implements OnInit, OnDestroy {
   startModalOpen = false;
   endModalOpen   = false;
 
-  // Fix për iOS blank calendar (render pas hapjes së modalit)
+  @ViewChild('startDt') startDtRef!: IonDatetime;
+  @ViewChild('endDt') endDtRef!: IonDatetime;
+
+  /**
+   * Fix për iOS WebKit: forcon ri-paint duke lexuar offsetHeight
+   * dhe duke shtuar/hequr një klasë CSS që shkakton animacion.
+   */
+  private forceRepaintDatetime(dtRef: IonDatetime | undefined) {
+    if (!dtRef) return;
+    const el = (dtRef as any).el as HTMLElement;
+    if (!el) return;
+
+    // 1. Force synchronous layout — most reliable WebKit repaint trigger
+    void el.offsetHeight;
+
+    // 2. Toggle a class that triggers a CSS animation for guaranteed compositing
+    el.classList.remove('ios-repaint');
+    void el.offsetHeight; // force style recalc between remove/add
+    el.classList.add('ios-repaint');
+  }
+
   onStartModalPresent() {
-    setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-      this.cdr.detectChanges();
-    }, 100);
+    // Stagger repaints to catch WebKit's lazy rendering
+    setTimeout(() => this.forceRepaintDatetime(this.startDtRef), 50);
+    setTimeout(() => this.forceRepaintDatetime(this.startDtRef), 200);
+    setTimeout(() => this.forceRepaintDatetime(this.startDtRef), 500);
   }
 
   onStartModalDismiss() {
@@ -64,10 +84,9 @@ export class ReservationPage implements OnInit, OnDestroy {
   }
 
   onEndModalPresent() {
-    setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-      this.cdr.detectChanges();
-    }, 100);
+    setTimeout(() => this.forceRepaintDatetime(this.endDtRef), 50);
+    setTimeout(() => this.forceRepaintDatetime(this.endDtRef), 200);
+    setTimeout(() => this.forceRepaintDatetime(this.endDtRef), 500);
   }
 
   onEndModalDismiss() {
