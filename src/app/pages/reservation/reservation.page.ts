@@ -213,7 +213,22 @@ export class ReservationPage implements OnInit, OnDestroy {
     if (raw) {
       const newValue = typeof raw === 'string' ? raw.substring(0, 16) : raw;
       if (newValue !== this.startDate) {
+        let diffMs = 1000 * 60 * 60 * 24; // 1 ditë default
+        if (this.startDate && this.endDate) {
+          const oldStartMs = new Date(this.startDate).getTime();
+          const oldEndMs = new Date(this.endDate).getTime();
+          if (oldEndMs > oldStartMs) {
+            diffMs = oldEndMs - oldStartMs;
+          }
+        }
+
         this.startDate = newValue;
+
+        const newEndMs = new Date(this.startDate).getTime() + diffMs;
+        const newEnd = new Date(newEndMs);
+        const pad = (n: number) => n < 10 ? '0' + n : n.toString();
+        this.endDate = `${newEnd.getFullYear()}-${pad(newEnd.getMonth()+1)}-${pad(newEnd.getDate())}T${pad(newEnd.getHours())}:${pad(newEnd.getMinutes())}`;
+
         this.recalculate();
       }
     }

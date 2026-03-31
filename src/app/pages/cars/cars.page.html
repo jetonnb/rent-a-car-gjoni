@@ -59,9 +59,9 @@
       </div>
     } @else {
       @for (car of carList; track car.id) {
-      <ion-card class="car-card">
-        <ion-card-header>
-          <ion-card-title style="font-size: 22px; font-weight: 800;">
+      <ion-card class="car-card" [class.all-filter-card]="filter === 'all'">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 16px 16px 4px 16px;">
+          <ion-card-title style="font-size: 22px; font-weight: 800; flex: 1; margin: 0; min-width: 0; white-space: normal; word-break: break-word;">
             {{ car.model }}
             @if (filter === 'active') {
               @if (car.isReserved) {
@@ -77,7 +77,13 @@
               }
             }
           </ion-card-title>
-        </ion-card-header>
+          @if (filter === 'active') {
+            <ion-button fill="outline" color="danger" (click)="promptDelete(car)" class="action-btn delete-btn" style="width: calc((100% - 12px) / 3); margin: 0; flex-shrink: 0;">
+              <ion-icon name="trash-outline" slot="start"></ion-icon>
+              Deaktivizo
+            </ion-button>
+          }
+        </div>
         <ion-card-content>
           <div class="car-actions">
             @if (filter === 'active') {
@@ -91,10 +97,10 @@
               Historia
             </ion-button>
             @if (filter === 'active') {
-              <ion-button fill="outline" color="danger" (click)="promptDelete(car)" class="action-btn delete-btn">
-                <ion-icon name="trash-outline" slot="start"></ion-icon>
-                Deaktivizo
-              </ion-button>
+                <ion-button fill="outline" color="primary" (click)="openEditModal(car)" class="action-btn edit-car-btn">
+                  <ion-icon name="create-outline" slot="start"></ion-icon>
+                  Ndrysho
+                </ion-button>
             }
           </div>
         </ion-card-content>
@@ -138,4 +144,28 @@
   </ng-template>
 </ion-modal>
 
-
+<!-- ─── Modal: Ndrysho Makinë ──────────────────────────────────────── -->
+<ion-modal [isOpen]="isEditModalOpen" (didDismiss)="cancelEdit()" [initialBreakpoint]="0.45" [breakpoints]="[0, 0.45]">
+  <ng-template>
+    <div class="modal-content">
+      <h2 class="modal-title">Ndrysho emrin e Makinës</h2>
+      <ion-item class="modal-input-item" lines="none">
+        <ion-label position="stacked">Modeli i Makinës</ion-label>
+        <ion-input
+          [(ngModel)]="editingCarModel"
+          placeholder="p.sh. Toyota Corolla"
+          [autofocus]="true"
+        ></ion-input>
+      </ion-item>
+      <div class="modal-actions">
+        <ion-button fill="outline" color="medium" (click)="cancelEdit()" expand="block" class="modal-btn">
+          Anulo
+        </ion-button>
+        <ion-button fill="solid" color="primary" (click)="confirmEditCar()"
+          [disabled]="!editingCarModel.trim()" expand="block" class="modal-btn">
+          Ruaj
+        </ion-button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>

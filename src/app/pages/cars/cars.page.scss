@@ -11,6 +11,12 @@
 
 /* ─── Kartë makine ────────────────────────────── */
 .car-card {
+  ion-card-header {
+    padding-bottom: 4px;
+  }
+  ion-card-content {
+    padding-top: 0px;
+  }
   ion-card-title {
     font-size: 19px;
     font-weight: 700;
@@ -18,12 +24,15 @@
   }
 }
 
+
+
 /* ─── Butonat veprimit ────────────────────────── */
 .car-actions {
   display: flex;
   gap: 6px;
   flex-wrap: nowrap;
-  align-items: center;
+  align-items: flex-end;
+  position: relative;
 }
 
 .action-btn {
@@ -33,6 +42,7 @@
   font-size: 13px;
   --border-radius: 8px;
   height: 34px;
+  margin: 0;
 }
 
 .delete-btn {
@@ -64,6 +74,26 @@
     border-color: transparent #ff1a0d transparent transparent;
     z-index: 1;
   }
+
+  ion-icon {
+    font-size: 16px;
+    margin-right: 2px;
+  }
+}
+
+.edit-car-btn {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  height: 34px;
+  font-size: 13px;
+  min-width: unset;
+  margin: 0;
+  --border-radius: 8px;
+  --color: var(--ion-color-primary);
+  --background: transparent;
+  --border-color: rgba(var(--ion-color-primary-rgb), 0.2);
+  --border-style: solid;
+  --border-width: 1px;
 
   ion-icon {
     font-size: 16px;

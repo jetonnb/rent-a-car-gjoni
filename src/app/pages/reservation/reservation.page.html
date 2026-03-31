@@ -9,164 +9,157 @@
 
 <ion-content class="res-content">
 
-  @if (initializing) {
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 16px;">
-      <ion-spinner name="crescent" color="primary" style="width: 40px; height: 40px;"></ion-spinner>
-      <p style="color: var(--ion-color-medium); font-weight: 500;">Duke u ngarkuar...</p>
+  <!-- Info makine -->
+  @if (car) {
+    <div class="car-banner">
+      <ion-icon name="car-outline" class="banner-icon"></ion-icon>
+      <div>
+        <p class="banner-label">Makina</p>
+        <p class="banner-model" style="font-size: 22px; font-weight: 800;">{{ car.model }}</p>
+      </div>
     </div>
-  } @else {
-    <!-- Info makine -->
-    @if (car) {
-      <div class="car-banner">
-        <ion-icon name="car-outline" class="banner-icon"></ion-icon>
-        <div>
-          <p class="banner-label">Makina</p>
-          <p class="banner-model" style="font-size: 22px; font-weight: 800;">{{ car.model }}</p>
+  }
+
+  <!-- Formulari -->
+  <div class="form-section">
+
+    <!-- Emri i klientit -->
+    <ion-item class="form-item" lines="none">
+      <ion-label position="stacked" style="font-weight: 800; font-size: 18px !important; color: var(--ion-color-primary);">Emri i Klientit *</ion-label>
+      <ion-input
+        [(ngModel)]="clientName"
+        placeholder="Shkruaj emrin..."
+        autocapitalize="words"
+      ></ion-input>
+    </ion-item>
+
+    <!-- Data dhe Ora e Marrjes -->
+    <div class="datetime-section">
+      <p class="datetime-label" style="font-weight: 800; font-size: 18px; color: var(--ion-color-primary); margin-bottom: 8px;">Data dhe Ora e Marrjes *</p>
+      <div class="datetime-row">
+        <div class="datetime-display" (click)="startModalOpen = true">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <span>{{ formatDate(startDate) }}</span>
         </div>
+      </div>
+      <ion-modal [isOpen]="startModalOpen" (didDismiss)="startModalOpen = false">
+        <ng-template>
+          <div class="dt-modal-wrapper">
+            <p class="dt-modal-title">Data dhe Ora e Marrjes</p>
+            <ion-datetime
+              presentation="date-time"
+              [hourCycle]="'h23'"
+              [value]="startDate"
+              (ionChange)="onStartDateChange($event)"
+              locale="sq-AL"
+              monthNames="Janar, Shkurt, Mars, Prill, Maj, Qershor, Korrik, Gusht, Shtator, Tetor, Nëntor, Dhjetor"
+              dayNames="E Diel, E Hënë, E Martë, E Mërkurë, E Enjte, E Premte, E Shtunë"
+              size="cover"
+              max="2030-12-31T23:59:59"
+            >
+              <span slot="time-label">Ora</span>
+            </ion-datetime>
+            <ion-button expand="block" (click)="startModalOpen = false" fill="outline" class="dt-close-btn">
+              Mbyll
+            </ion-button>
+          </div>
+        </ng-template>
+      </ion-modal>
+    </div>
+
+    <!-- Data dhe Ora e Kthimit -->
+    <div class="datetime-section">
+      <p class="datetime-label" style="font-weight: 800; font-size: 18px; color: var(--ion-color-primary); margin-bottom: 8px;">Data dhe Ora e Kthimit *</p>
+      <div class="datetime-row">
+        <div class="datetime-display" (click)="endModalOpen = true">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <span>{{ formatDate(endDate) }}</span>
+        </div>
+      </div>
+      <ion-modal [isOpen]="endModalOpen" (didDismiss)="endModalOpen = false">
+        <ng-template>
+          <div class="dt-modal-wrapper">
+            <p class="dt-modal-title">Data dhe Ora e Kthimit</p>
+            <ion-datetime
+              presentation="date-time"
+              [hourCycle]="'h23'"
+              [value]="endDate"
+              (ionChange)="onEndDateChange($event)"
+              locale="sq-AL"
+              monthNames="Janar, Shkurt, Mars, Prill, Maj, Qershor, Korrik, Gusht, Shtator, Tetor, Nëntor, Dhjetor"
+              dayNames="E Diel, E Hënë, E Martë, E Mërkurë, E Enjte, E Premte, E Shtunë"
+              size="cover"
+              max="2030-12-31T23:59:59"
+            >
+              <span slot="time-label">Ora</span>
+            </ion-datetime>
+            <ion-button expand="block" (click)="endModalOpen = false" fill="outline" class="dt-close-btn">
+              Mbyll
+            </ion-button>
+          </div>
+        </ng-template>
+      </ion-modal>
+    </div>
+
+    <!-- Mesazhi i Valdimit (Overlap / Invalid Range) -->
+    @if (validationMsg) {
+      <div class="validation-error-box">
+        <ion-icon name="warning-outline"></ion-icon>
+        <p>{{ validationMsg }}</p>
       </div>
     }
 
-    <!-- Formulari -->
-    <div class="form-section">
+    <!-- Çmimi në Ditë -->
+    <ion-item class="form-item" lines="none">
+      <ion-label position="stacked" style="font-weight: 800; font-size: 18px !important; color: var(--ion-color-primary);">Çmimi në Ditë (€) *</ion-label>
+      <ion-input
+        type="number"
+        [(ngModel)]="pricePerDay"
+        (ionInput)="recalculate()"
+        [min]="1"
+        inputmode="decimal"
+        placeholder="p.sh. 30"
+      ></ion-input>
+    </ion-item>
 
-      <!-- Emri i klientit -->
-      <ion-item class="form-item" lines="none">
-        <ion-label position="stacked" style="font-weight: 800; font-size: 18px !important; color: var(--ion-color-primary);">Emri i Klientit *</ion-label>
-        <ion-input
-          [(ngModel)]="clientName"
-          placeholder="Shkruaj emrin..."
-          autocapitalize="words"
-        ></ion-input>
-      </ion-item>
+    
 
-      <!-- Data dhe Ora e Marrjes -->
-      <div class="datetime-section">
-        <p class="datetime-label" style="font-weight: 800; font-size: 18px; color: var(--ion-color-primary); margin-bottom: 8px;">Data dhe Ora e Marrjes *</p>
-        <div class="datetime-row">
-          <div class="datetime-display" (click)="startModalOpen = true">
-            <ion-icon name="calendar-outline"></ion-icon>
-            <span>{{ formatDate(startDate) }}</span>
-          </div>
-        </div>
-        <ion-modal [isOpen]="startModalOpen" (didPresent)="onStartModalPresent()" (didDismiss)="onStartModalDismiss()">
-          <ng-template>
-            <div class="dt-modal-wrapper">
-              <p class="dt-modal-title">Data dhe Ora e Marrjes</p>
-              <ion-datetime #startDt
-                presentation="date-time"
-                [hourCycle]="'h23'"
-                [value]="startDate"
-                (ionChange)="onStartDateChange($event)"
-                locale="sq-AL"
-                monthNames="Janar, Shkurt, Mars, Prill, Maj, Qershor, Korrik, Gusht, Shtator, Tetor, Nëntor, Dhjetor"
-                dayNames="E Diel, E Hënë, E Martë, E Mërkurë, E Enjte, E Premte, E Shtunë"
-                size="cover"
-                max="2030-12-31T23:59:59"
-              >
-                <span slot="time-label">Ora</span>
-              </ion-datetime>
-              <ion-button expand="block" (click)="startModalOpen = false" fill="outline" class="dt-close-btn">
-                Mbyll
-              </ion-button>
-            </div>
-          </ng-template>
-        </ion-modal>
-      </div>
-
-      <!-- Data dhe Ora e Kthimit -->
-      <div class="datetime-section">
-        <p class="datetime-label" style="font-weight: 800; font-size: 18px; color: var(--ion-color-primary); margin-bottom: 8px;">Data dhe Ora e Kthimit *</p>
-        <div class="datetime-row">
-          <div class="datetime-display" (click)="endModalOpen = true">
-            <ion-icon name="calendar-outline"></ion-icon>
-            <span>{{ formatDate(endDate) }}</span>
-          </div>
-        </div>
-        <ion-modal [isOpen]="endModalOpen" (didPresent)="onEndModalPresent()" (didDismiss)="onEndModalDismiss()">
-          <ng-template>
-            <div class="dt-modal-wrapper">
-              <p class="dt-modal-title">Data dhe Ora e Kthimit</p>
-              <ion-datetime #endDt
-                presentation="date-time"
-                [hourCycle]="'h23'"
-                [value]="endDate"
-                (ionChange)="onEndDateChange($event)"
-                locale="sq-AL"
-                monthNames="Janar, Shkurt, Mars, Prill, Maj, Qershor, Korrik, Gusht, Shtator, Tetor, Nëntor, Dhjetor"
-                dayNames="E Diel, E Hënë, E Martë, E Mërkurë, E Enjte, E Premte, E Shtunë"
-                size="cover"
-                max="2030-12-31T23:59:59"
-              >
-                <span slot="time-label">Ora</span>
-              </ion-datetime>
-              <ion-button expand="block" (click)="endModalOpen = false" fill="outline" class="dt-close-btn">
-                Mbyll
-              </ion-button>
-            </div>
-          </ng-template>
-        </ion-modal>
-      </div>
-
-      <!-- Mesazhi i Valdimit (Overlap / Invalid Range) -->
-      @if (validationMsg) {
-        <div class="validation-error-box">
-          <ion-icon name="warning-outline"></ion-icon>
-          <p>{{ validationMsg }}</p>
-        </div>
-      }
-
-      <!-- Çmimi në Ditë -->
-      <ion-item class="form-item" lines="none">
-        <ion-label position="stacked" style="font-weight: 800; font-size: 18px !important; color: var(--ion-color-primary);">Çmimi në Ditë (€) *</ion-label>
-        <ion-input
-          type="number"
-          [(ngModel)]="pricePerDay"
-          (ionInput)="recalculate()"
-          [min]="1"
-          inputmode="decimal"
-          placeholder="p.sh. 30"
-        ></ion-input>
-      </ion-item>
-
-      
-
-      <!-- Çmimi Total (live) -->
-      <div class="total-box" [class.total-error]="!isAvailable || totalPrice === 0">
-        <div>
-          <p class="total-label">Çmimi Total</p>
-          @if (diffDays > 0 && isAvailable) {
-            <p style="margin: 4px 0 0; font-size: 14px; color: rgba(255,255,255,0.75);">
-              {{ diffDays }} ditë x {{ pricePerDay }}€
-            </p>
-          }
-        </div>
-        <p class="total-value" style="font-size: 32px; font-weight: 900;">
-          @if (totalPrice > 0 && isAvailable) {
-            {{ totalPrice | currency:'EUR':'symbol':'1.0-0' }}
-          } @else {
-            —
-          }
-        </p>
-      </div>
-
-    </div>
-
-    <!-- Butoni Ruaj -->
-    <div class="save-section">
-      <ion-button
-        expand="block"
-        [disabled]="saving"
-        (click)="save()"
-        class="save-btn"
-      >
-        @if (saving) {
-          <ion-spinner name="crescent"></ion-spinner>
-        } @else {
-          <ion-icon name="save-outline" slot="start"></ion-icon>
-          {{ resId ? 'Përditëso Rezervimin' : 'Ruaj Rezervimin' }}
+    <!-- Çmimi Total (live) -->
+    <div class="total-box" [class.total-error]="!isAvailable || totalPrice === 0">
+      <div>
+        <p class="total-label">Çmimi Total</p>
+        @if (diffDays > 0 && isAvailable) {
+          <p style="margin: 4px 0 0; font-size: 14px; color: rgba(255,255,255,0.75);">
+            {{ diffDays }} ditë x {{ pricePerDay }}€
+          </p>
         }
-      </ion-button>
+      </div>
+      <p class="total-value" style="font-size: 32px; font-weight: 900;">
+        @if (totalPrice > 0 && isAvailable) {
+          {{ totalPrice | currency:'EUR':'symbol':'1.0-0' }}
+        } @else {
+          —
+        }
+      </p>
     </div>
-  }
+
+  </div>
+
+  <!-- Butoni Ruaj -->
+  <div class="save-section">
+    <ion-button
+      expand="block"
+      [disabled]="saving"
+      (click)="save()"
+      class="save-btn"
+    >
+      @if (saving) {
+        <ion-spinner name="crescent"></ion-spinner>
+      } @else {
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        {{ resId ? 'Përditëso Rezervimin' : 'Ruaj Rezervimin' }}
+      }
+    </ion-button>
+  </div>
 
 </ion-content>

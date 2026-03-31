@@ -13,7 +13,7 @@ import {
 import { addIcons } from 'ionicons';
 import {
   addOutline, calendarOutline, timeOutline,
-  trashOutline, logOutOutline, carSportOutline, refreshOutline
+  trashOutline, logOutOutline, carSportOutline, refreshOutline, createOutline
 } from 'ionicons/icons';
 import { Car } from '../../models/car.model';
 import { DataService } from '../../services/data.service';
@@ -44,7 +44,10 @@ export class CarsPage implements OnInit, OnDestroy {
   isAddModalOpen = false;
   newCarModel    = '';
 
-  /* Modal shto makinë */
+  /* Modal ndrysho makinë */
+  isEditModalOpen = false;
+  editingCarId    = '';
+  editingCarModel = '';
 
   constructor(
     private data: DataService,
@@ -53,7 +56,7 @@ export class CarsPage implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private ui: UiService
   ) {
-    addIcons({ addOutline, calendarOutline, timeOutline, trashOutline, logOutOutline, carSportOutline, refreshOutline });
+    addIcons({ addOutline, calendarOutline, timeOutline, trashOutline, logOutOutline, carSportOutline, refreshOutline, createOutline });
   }
 
   ngOnInit(): void {
@@ -93,15 +96,50 @@ export class CarsPage implements OnInit, OnDestroy {
   }
 
   async confirmAddCar(): Promise<void> {
-    if (this.newCarModel.trim()) {
-      await this.data.addCar(this.newCarModel.trim());
-    }
+    const model = this.newCarModel.trim();
     this.isAddModalOpen = false;
     this.cdr.detectChanges();
+
+    if (model) {
+      try {
+        await this.data.addCar(model);
+        await this.ui.showSuccess('Makina u shtua me sukses.');
+      } catch (e) {
+        await this.ui.showError('Ndodhi një gabim gjatë shtimit të makinës.');
+      }
+    }
   }
 
   cancelAdd(): void {
     this.isAddModalOpen = false;
+    this.cdr.detectChanges();
+  }
+
+  openEditModal(car: Car): void {
+    this.editingCarId    = car.id;
+    this.editingCarModel = car.model;
+    this.isEditModalOpen = true;
+    this.cdr.detectChanges();
+  }
+
+  async confirmEditCar(): Promise<void> {
+    const id = this.editingCarId;
+    const model = this.editingCarModel.trim();
+    this.isEditModalOpen = false;
+    this.cdr.detectChanges();
+
+    if (model && id) {
+      try {
+        await this.data.updateCarName(id, model);
+        await this.ui.showSuccess('Makina u përditësua me sukses.');
+      } catch (e) {
+        await this.ui.showError('Ndodhi një gabim gjatë përditësimit të makinës.');
+      }
+    }
+  }
+
+  cancelEdit(): void {
+    this.isEditModalOpen = false;
     this.cdr.detectChanges();
   }
 

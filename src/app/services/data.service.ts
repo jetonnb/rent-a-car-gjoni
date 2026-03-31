@@ -6,6 +6,7 @@ import {
 import { Observable, combineLatest, map, catchError, of, shareReplay } from 'rxjs';
 import { Car } from '../models/car.model';
 import { Reservation } from '../models/reservation.model';
+import { AuthService } from './auth.service';
 
 function calcTotalPrice(startIso: string, endIso: string, pricePerDay: number): number {
   const diffMs = new Date(endIso).getTime() - new Date(startIso).getTime();
@@ -17,9 +18,15 @@ function calcTotalPrice(startIso: string, endIso: string, pricePerDay: number): 
 export class DataService {
   private firestore = inject(Firestore);
   private injector  = inject(Injector);
+  private auth      = inject(AuthService);
 
-  private CARS_PATH = 'cars';
-  private RES_PATH  = 'reservations';
+  private get CARS_PATH(): string {
+    return this.auth.currentUser?.email === 'test@gjoni.com' ? 'test_cars' : 'cars';
+  }
+
+  private get RES_PATH(): string {
+    return this.auth.currentUser?.email === 'test@gjoni.com' ? 'test_reservations' : 'reservations';
+  }
 
 
   // ─── Private helpers ────────────────────────────────────────────────────────
@@ -148,6 +155,10 @@ export class DataService {
       model: model.trim(),
       isActive: true
     });
+  }
+
+  async updateCarName(id: string, model: string): Promise<void> {
+    await updateDoc(doc(this.firestore, `${this.CARS_PATH}/${id}`), { model: model.trim() });
   }
 
   async softDeleteCar(id: string): Promise<void> {

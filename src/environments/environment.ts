@@ -2,11 +2,12 @@ export const environment = {
   production: false,
   secure: false,
   firebase: {
-    apiKey: "AIzaSyCz5FApQLj-_9D_OSc4DmLDH4WQyvg_9IE",
-    authDomain: "rentacargjoni.firebaseapp.com",
-    projectId: "rentacargjoni",
-    storageBucket: "rentacargjoni.firebasestorage.app",
-    messagingSenderId: "859260343672",
-    appId: "1:859260343672:web:da865848cb13354b85a48d"
+   apiKey: "AIzaSyBPIVG0Xy931Er81mjA0ssN4854Rikb21Q",
+  authDomain: "rentacar-gjoni-dev.firebaseapp.com",
+  projectId: "rentacar-gjoni-dev",
+  storageBucket: "rentacar-gjoni-dev.firebasestorage.app",
+  messagingSenderId: "542568792872",
+  appId: "1:542568792872:web:5585052e27f7accf91061d"
+
   }
 };
