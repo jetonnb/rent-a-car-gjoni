@@ -116,22 +116,22 @@ export class ReservationPage implements OnInit, OnDestroy {
   }
 
   private async initData(): Promise<void> {
+    const pad = (n: number) => n < 10 ? '0' + n : n;
+    const toLocalISO = (d: Date) => 
+      `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
     if (this.resId) {
       this._subs.push(this.data.getReservationById$(this.resId).subscribe(async res => {
         if (res) {
           this.clientName  = res.clientName;
-          this.startDate   = res.startDate.substring(0, 16);
-          this.endDate     = res.endDate.substring(0, 16);
+          this.startDate   = toLocalISO(new Date(res.startDate));
+          this.endDate     = toLocalISO(new Date(res.endDate));
           this.pricePerDay = res.pricePerDay;
           await this.recalculate();
           this.cdr.detectChanges();
         }
       }));
     } else {
-      const pad = (n: number) => n < 10 ? '0' + n : n;
-      const toLocalISO = (d: Date) => 
-        `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-
       try {
         const freeDate = await this.data.getEarliestFreeDate(this.carId);
         this.startDate = toLocalISO(freeDate);
